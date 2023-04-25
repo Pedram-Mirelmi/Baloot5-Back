@@ -2,8 +2,12 @@ package ie.baloot5.controller;
 
 import static ie.baloot5.Utils.Constants.*;
 
+import ie.baloot5.Utils.Constants;
 import ie.baloot5.data.IRepository;
 import ie.baloot5.data.ISessionManager;
+import ie.baloot5.exception.InvalidIdException;
+import ie.baloot5.model.User;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.NoSuchAlgorithmException;
@@ -23,7 +27,7 @@ public class AuthController {
     }
 
     @GetMapping("/logout")
-    public Map<String, String> logout(@RequestHeader(AUTHENTICATION_TOKEN) String authToken) {
+    public Map<String, String> logout(@RequestHeader(Constants.AUTH_TOKEN) String authToken) {
         sessionManager.removeSession(authToken);
         Map<String, String> response = new HashMap<>();
         response.put("status", "success");
@@ -41,6 +45,26 @@ public class AuthController {
         Map<String, String> response = new HashMap<>();
         response.put("Auth-token", authToken);
         response.put("status", "success");
+        return response;
+    }
+
+    @PostMapping
+    public Map<String, String> register(@RequestBody Map<String, String> body) {
+        String username = body.get(USERNAME);
+        String password = body.get(PASSWORD);
+        String email = body.get(EMAIL);
+        String birthDate = body.get(BIRTHDATE);
+        String address = body.get(ADDRESS);
+        Map<String, String> response = new HashMap<>();
+        try {
+            repository.addUser(new User(username, password, email, birthDate, address, 0));
+            String authToken = sessionManager.addSession(username);
+            return Map.of(STATUS, SUCCESS,
+                     AUTH_TOKEN, authToken);
+        }
+        catch (InvalidIdException | NoSuchAlgorithmException e) { // TODO exception handling
+//            response.put("")
+        }
         return response;
     }
 

@@ -24,14 +24,14 @@ public class DBService implements IRepository {
     protected HashMap<Long, Comment> comments = new HashMap<>();
     protected HashMap<String, Discount> discounts = new HashMap<>();
     protected HashMap<String, HashSet<String>> discountRecords = new HashMap<>();
-    protected HashBasedTable<String, Long, Long> buyLists = HashBasedTable.create(); // user, commodity, count
+    protected HashBasedTable<String, Long, Long> shoppingList = HashBasedTable.create(); // user, commodity, count
     protected HashBasedTable<String, Long, Long> purchasedList = HashBasedTable.create(); // user, commodity, count
     protected HashBasedTable<String, Long, Float> rates = HashBasedTable.create();
     protected HashBasedTable<String, Long, Integer> votes = HashBasedTable.create(); // <voter, commentId, vote>
 
 
     @Override
-    public void getData(@NotNull String apiUri) {
+    public void getData(@NotNull String apiUri) throws InvalidIdException {
         Gson gson = new Gson();
         User[] usersList = gson.fromJson(getResource(apiUri + "users"), User[].class);
         for (User user : usersList)
@@ -109,9 +109,9 @@ public class DBService implements IRepository {
     }
 
     @Override
-    public void addUser(@NotNull User user) {
+    public void addUser(@NotNull User user) throws InvalidIdException {
         if (users.containsKey(user.getUsername()))
-            throw new IllegalArgumentException("User Already exists");
+            throw new InvalidIdException("User Already exists");
         users.put(user.getUsername(), new User(user));
     }
 
@@ -122,9 +122,9 @@ public class DBService implements IRepository {
     }
 
     @Override
-    public void addProvider(@NotNull Provider provider) {
+    public void addProvider(@NotNull Provider provider) throws InvalidIdException {
         if (providers.containsKey(provider.getId()))
-            throw new IllegalArgumentException("Provider already exists");
+            throw new InvalidIdException("Provider already exists");
         providers.put(provider.getId(), new Provider(provider));
     }
 
@@ -136,9 +136,9 @@ public class DBService implements IRepository {
     }
 
     @Override
-    public void addCommodity(@NotNull Commodity newCommodity) {
+    public void addCommodity(@NotNull Commodity newCommodity) throws InvalidIdException {
         if (!providers.containsKey(newCommodity.getProviderId())) {
-            throw new IllegalArgumentException("There is no provider with id " + newCommodity.getProviderId());
+            throw new InvalidIdException("There is no provider with id " + newCommodity.getProviderId());
         }
 
         if (!commodities.containsKey(newCommodity.getId())) {
@@ -197,19 +197,19 @@ public class DBService implements IRepository {
         if (!this.users.containsKey(username))
             throw new InvalidIdException("invalid username");
 //        commodity.setInStock(commodity.getInStock() - count);
-        long inListCount = buyLists.get(username, commodityId) == null ? 0 : Objects.requireNonNull(buyLists.get(username, commodityId));
-        buyLists.put(username, commodityId, count + inListCount);
+        long inListCount = shoppingList.get(username, commodityId) == null ? 0 : Objects.requireNonNull(shoppingList.get(username, commodityId));
+        shoppingList.put(username, commodityId, count + inListCount);
     }
 
     @Override
-    public void removeFromBuyList(@NotNull String username, long commodityId, int count) throws NotEnoughAmountException {
-        long inList = buyLists.get(username, commodityId) == null ? 0 : Objects.requireNonNull(buyLists.get(username, commodityId));
+    public void removeFromBuyList(@NotNull String username, long commodityId, long count) throws NotEnoughAmountException {
+        long inList = shoppingList.get(username, commodityId) == null ? 0 : Objects.requireNonNull(shoppingList.get(username, commodityId));
 
         if (inList >= count) {
-            if (inList - count == 0)
-                buyLists.remove(username, commodityId);
+            if (inList == count)
+                shoppingList.remove(username, commodityId);
             else
-                buyLists.put(username, commodityId, inList - count);
+                shoppingList.put(username, commodityId, inList - count);
         } else {
             throw new NotEnoughAmountException("Not enough items in list");
         }
@@ -275,7 +275,7 @@ public class DBService implements IRepository {
     public void purchase(@NotNull String username, double discount) throws NotEnoughAmountException, InvalidIdException {
         if (!users.containsKey(username))
             throw new InvalidIdException("Not such username");
-        var buyList = buyLists.row(username).entrySet();
+        var buyList = shoppingList.row(username).entrySet();
         long totalPrice = (long)(calculateTotalBuyListPrice(username) * discount);
         User user = users.get(username);
         if (user.getCredit() < totalPrice)
@@ -287,7 +287,7 @@ public class DBService implements IRepository {
             commodities.get(entry.getKey()).subtractStock(entry.getValue());
             long inList = purchasedList.contains(username, entry.getKey()) ? Objects.requireNonNull(purchasedList.get(username, entry.getKey())) : 0;
             purchasedList.put(username, entry.getKey(), entry.getValue() + inList);
-            buyLists.remove(username, entry.getKey());
+            shoppingList.remove(username, entry.getKey());
         }
         user.setCredit(user.getCredit() - totalPrice);
     }
@@ -302,17 +302,19 @@ public class DBService implements IRepository {
         if (!users.containsKey(username))
             throw new InvalidIdException("Not Such User");
 
-        return buyLists.row(username).entrySet().stream().mapToLong(
+        return shoppingList.row(username).entrySet().stream().mapToLong(
                 entry -> entry.getValue() * commodities.get(entry.getKey()).getPrice()
         ).sum();
     }
 
-    @NotNull
     @Override
-    public Map<Long, Long> getBuyList(String username) throws InvalidIdException {
+    public List<ShoppingItem> getShoppingList(String username) throws InvalidIdException {
         if (!users.containsKey(username))
             throw new InvalidIdException("Not Such User");
-        return buyLists.row(username);
+        Map<Long, Long> itemsCounts = shoppingList.row(username);
+        final List<ShoppingItem> shoppingItems = new ArrayList<>();
+        itemsCounts.forEach((key, value) -> shoppingItems.add(new ShoppingItem(commodities.get(key), value)));
+        return shoppingItems;
     }
 
     @NotNull
@@ -333,5 +335,11 @@ public class DBService implements IRepository {
         if(!discountRecords.containsKey(discountCode))
             throw new InvalidIdException("Invalid Discount code");
         return discountRecords.get(discountCode).contains(username);
+    }
+
+    @Override
+    public List<Commodity> getRecommendedCommodities(String username) {
+        // TODO implement recommendation
+        return new ArrayList<>();
     }
 }

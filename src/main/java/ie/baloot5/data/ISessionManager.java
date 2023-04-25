@@ -10,4 +10,6 @@ public interface ISessionManager {
     String addSession(String username) throws NoSuchAlgorithmException;
 
     boolean removeSession(String authToken);
+
+    boolean isValidToken(String authToken);
 }

@@ -15,10 +15,10 @@ import java.util.Arrays;
 @SpringBootApplication
 public class Baloot5Application {
 
-	public static void main(String[] args) throws NoSuchAlgorithmException, DecoderException {
-		var digest = MessageDigest.getInstance("SHA-1");
-		byte[] result = Hex.decodeHex(Arrays.toString(digest.digest("asdfasdfasdf".getBytes())).toCharArray());
-		System.out.println(result);
-//		SpringApplication.run(Baloot5Application.class, args);
+	public static void main(String[] args) {
+//		var digest = MessageDigest.getInstance("SHA-1");
+//		byte[] result = Hex.decodeHex(Arrays.toString(digest.digest("asdfasdfasdf".getBytes())).toCharArray());
+//		System.out.println(result);
+		SpringApplication.run(Baloot5Application.class, args);
 	}
 }

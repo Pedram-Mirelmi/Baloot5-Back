@@ -18,7 +18,7 @@ public class SessionManager implements ISessionManager {
     final private HashMap<String, User> sessions = new HashMap<>();
 
 
-    public SessionManager(IRepository repository) throws NoSuchAlgorithmException {
+    public SessionManager(IRepository repository) {
         this.repository = repository;
     }
 
@@ -43,5 +43,10 @@ public class SessionManager implements ISessionManager {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean isValidToken(String authToken) {
+        return sessions.containsKey(authToken);
     }
 }
