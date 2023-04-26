@@ -21,14 +21,6 @@ public class CommodityController {
         this.sessionManager = sessionManager;
     }
 
-    @GetMapping("/commodities")
-    public List<Commodity> getCommodities(@RequestHeader(AUTH_TOKEN) String authToken) {
-        if(sessionManager.isValidToken(authToken)) {
-            return repository.getCommodityList();
-        }
-        return new ArrayList<>();
-    }
-
     @GetMapping("/commodities/{commodityId}")
     public Commodity getSingleCommodity(@RequestHeader(AUTH_TOKEN) String authToken, @PathParam("commodityId") int commodityId) {
         if(sessionManager.isValidToken(authToken)) {
@@ -36,29 +28,31 @@ public class CommodityController {
             // TODO exception handling
             return commodity.orElse(null);
         }
-        // TODO
+        // TODO exception handling
         return null;
     }
 
     @GetMapping("/commodities")
-    public List<Commodity> sortCommodities(@RequestHeader(AUTH_TOKEN) String authToken, @RequestParam(SORT_BY) String sortBy) {
+    public List<Commodity> sortCommodities(@RequestHeader(AUTH_TOKEN) String authToken, @RequestParam(value = SORT_BY) Optional<String> sortBy) {
         if(sessionManager.isValidToken(authToken)) {
-            if(sortBy.equals(ID)) {
+            if(sortBy.isEmpty()) {
+                return repository.getCommodityList();
+            }
+            if(sortBy.get().equals(ID)) {
                 return repository.getCommodityList().stream().sorted(Comparator.comparingLong(Commodity::getId)).toList();
             }
-            if(sortBy.equals(PRICE)) {
+            if(sortBy.get().equals(PRICE)) {
                 return repository.getCommodityList().stream().sorted(Comparator.comparingLong(Commodity::getPrice)).toList();
             }
-            if(sortBy.equals(RATING)) {
+            if(sortBy.get().equals(RATING)) {
                 return repository.getCommodityList().stream().sorted(Comparator.comparingDouble(Commodity::getRating)).toList();
             }
-            // TODO exception handling
-            return new ArrayList<>();
         }
+        // TODO exception handling
         return new ArrayList<>();
     }
 
-    @PostMapping("/rateCommodity")
+    @PostMapping("/commoditiesRates")
     public Map<String, String> rateCommodity(@RequestHeader(AUTH_TOKEN) String authToken, @RequestBody Map<String, String> body) {
         if(sessionManager.isValidToken(authToken)) {
             long commodityId = Long.parseLong(body.get(COMMODITY_ID));
@@ -67,6 +61,7 @@ public class CommodityController {
             repository.addRating(user.getUsername(), commodityId, rate);
             return Map.of(STATUS, SUCCESS);
         }
+        // TODO exception handling
         return new HashMap<>();
     }
 

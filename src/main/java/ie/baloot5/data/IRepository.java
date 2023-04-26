@@ -58,7 +58,7 @@ public interface IRepository {
 
     void addCredit(String username, long credit) throws InvalidIdException, InvalidValueException;
 
-    void purchase(@NotNull String username, double discount) throws NotEnoughAmountException, InvalidIdException;
+    void purchase(@NotNull String username, float discount) throws NotEnoughAmountException, InvalidIdException;
 
     Optional<Float> getRating(@NotNull String username, long commodityId);
 
@@ -66,11 +66,14 @@ public interface IRepository {
 
     List<ShoppingItem> getShoppingList(String username) throws InvalidIdException;
 
-    Map<Long, Long> getPurchasedList(String username) throws InvalidIdException;
+    List<ShoppingItem> getPurchasedList(String username) throws InvalidIdException;
 
     Optional<Discount> getDiscount(String discountCode);
 
     boolean hasUserUsedDiscount(String discountCode, String username) throws InvalidIdException;
 
     List<Commodity> getRecommendedCommodities(String username);
+
+    Optional<Comment> getComment(long commentId);
 }
+

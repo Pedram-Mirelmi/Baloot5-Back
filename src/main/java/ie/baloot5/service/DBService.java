@@ -30,6 +30,11 @@ public class DBService implements IRepository {
     protected HashBasedTable<String, Long, Integer> votes = HashBasedTable.create(); // <voter, commentId, vote>
 
 
+    public DBService() throws InvalidIdException {
+        System.out.println("DB service initiated");
+        getData("http://5.253.25.110:5000/api/");
+    }
+
     @Override
     public void getData(@NotNull String apiUri) throws InvalidIdException {
         Gson gson = new Gson();
@@ -242,7 +247,13 @@ public class DBService implements IRepository {
             throw new InvalidIdException("Invalid comment id");
         if(vote != -1 && vote != 1)
             throw new InvalidValueException("Invalid vote value(Only 1 and -1)");
+        Comment comment = comments.get(commentId);
+        if(votes.contains(voter, commentId)) {
+            comment.removeVote(Objects.requireNonNull(votes.get(voter, commentId)));
+        }
+        comment.addVote(vote);
         votes.put(voter, commentId, vote);
+
     }
 
     @Override
@@ -272,7 +283,7 @@ public class DBService implements IRepository {
 
 
     @Override
-    public void purchase(@NotNull String username, double discount) throws NotEnoughAmountException, InvalidIdException {
+    public void purchase(@NotNull String username, float discount) throws NotEnoughAmountException, InvalidIdException {
         if (!users.containsKey(username))
             throw new InvalidIdException("Not such username");
         var buyList = shoppingList.row(username).entrySet();
@@ -317,12 +328,14 @@ public class DBService implements IRepository {
         return shoppingItems;
     }
 
-    @NotNull
     @Override
-    public Map<Long, Long> getPurchasedList(String username) throws InvalidIdException {
+    public List<ShoppingItem> getPurchasedList(String username) throws InvalidIdException {
         if (!users.containsKey(username))
             throw new InvalidIdException("Not Such User");
-        return purchasedList.row(username);
+        Map<Long, Long> itemsCounts = purchasedList.row(username);
+        final List<ShoppingItem> purchasedItems = new ArrayList<>();
+        itemsCounts.forEach((key, value) -> purchasedItems.add(new ShoppingItem(commodities.get(key), value)));
+        return purchasedItems;
     }
 
     @Override
@@ -341,5 +354,10 @@ public class DBService implements IRepository {
     public List<Commodity> getRecommendedCommodities(String username) {
         // TODO implement recommendation
         return new ArrayList<>();
+    }
+
+    @Override
+    public Optional<Comment> getComment(long commentId) {
+        return Optional.ofNullable(comments.get(commentId));
     }
 }

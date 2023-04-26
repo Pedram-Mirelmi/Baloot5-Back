@@ -27,4 +27,7 @@ public class Constants {
     public static final String DISCOUNT = "discount";
     public static final String INVALID = "invalid";
     public static final String COMMENT_ID = "commentId";
+    public static final String PROVIDER = "provider";
+    public static final String VOTE = "vote";
+    public static final String PROVIDER_ID = "providerId";
 }

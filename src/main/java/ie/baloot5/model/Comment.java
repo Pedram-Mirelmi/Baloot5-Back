@@ -1,16 +1,13 @@
 package ie.baloot5.model;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 public class Comment {
-    private String userEmail;
+    private Long commentId;
+    private String username;
     private Long commodityId;
     private String text;
     private String date;
-    private String username;
-    private Long commentId;
-
+    private int likes = 0;
+    private int dislikes = 0;
 
     public Comment(Long commentId, Long commodityId, String username, String text, String date) {
         this.commentId = commentId;
@@ -20,20 +17,30 @@ public class Comment {
         this.date = date;
     }
 
+    public void addVote(int vote) {
+        if(vote == 1) {
+            likes++;
+        }
+        else {
+            dislikes++;
+        }
+    }
+
+    public void removeVote(int vote) {
+        if(vote == 1) {
+            likes--;
+        }
+        else {
+            dislikes--;
+        }
+    }
+
     public String getUsername() {
         return username;
     }
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public String getUserEmail() {
-        return userEmail;
-    }
-
-    public void setUserEmail(String userEmail) {
-        this.userEmail = userEmail;
     }
 
     public void setCommodityId(Long commodityId) {
@@ -67,4 +74,21 @@ public class Comment {
     public Long getCommodityId() {
         return commodityId;
     }
+
+    public int getLikes() {
+        return likes;
+    }
+
+    public void setLikes(int likes) {
+        this.likes = likes;
+    }
+
+    public int getDislikes() {
+        return dislikes;
+    }
+
+    public void setDislikes(int dislikes) {
+        this.dislikes = dislikes;
+    }
+
 }

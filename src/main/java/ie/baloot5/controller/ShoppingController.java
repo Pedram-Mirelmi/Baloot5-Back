@@ -27,14 +27,7 @@ public class ShoppingController {
         this.sessionManager = sessionManager;
     }
 
-    @PostMapping("/addCredit")
-    public Map<String, String> addCredit(@RequestHeader(AUTH_TOKEN) String authToken, @RequestBody Map<String, String> body) throws InvalidIdException, InvalidValueException {
-        float amount = Float.parseFloat(body.get(AMOUNT));
-        User user = sessionManager.getUser(authToken).get();
-        repository.addCredit(user.getUsername(), (int)amount);
-        Map<String, String> response;
-        return Map.of(STATUS, SUCCESS);
-    }
+
 
     @PostMapping("/shoppingList")
     public Map<String, String> addToShoppingList(@RequestHeader(AUTH_TOKEN) String authToken, @RequestBody Map<String, Long> body) throws InvalidIdException, NotEnoughAmountException {
@@ -72,12 +65,23 @@ public class ShoppingController {
         return null;
     }
 
+    @GetMapping("/purchasedList")
+    public List<ShoppingItem> getPurchasedList(@RequestHeader(AUTH_TOKEN) String authToken) throws InvalidIdException {
+        if(sessionManager.isValidToken(authToken)) {
+            return repository.getPurchasedList(sessionManager.getUser(authToken).get().getUsername());
+        }
+        return null;
+    }
+
     @GetMapping("/pay")
-    public Map<String, String> purchase(@RequestHeader(AUTH_TOKEN) String authToken, @RequestParam(name = "discountCode", defaultValue = "") String discountCode) throws InvalidIdException, NotEnoughAmountException {
+    public Map<String, String> purchase(@RequestHeader(AUTH_TOKEN) String authToken, @RequestParam("discountCode") Optional<String> discountCode) throws InvalidIdException, NotEnoughAmountException {
         if(sessionManager.isValidToken(authToken)) {
             User user = sessionManager.getUser(authToken).get();
-            Optional<Discount> discount = repository.getDiscount(discountCode);
-            repository.purchase(user.getUsername(), (discount.isPresent()) ? (discount.get().getDiscount()/(float)100) : 1.0);
+            float discount = 1.0F;
+            if(discountCode.isPresent() && repository.getDiscount(discountCode.get()).isPresent()) {
+                discount = repository.getDiscount(discountCode.get()).get().getDiscount() / 100F;
+            }
+            repository.purchase(user.getUsername(), discount);
             return Map.of(STATUS, SUCCESS);
         }
         // TODO exception handling

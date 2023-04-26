@@ -11,7 +11,8 @@ import static ie.baloot5.Utils.Constants.*;
 import java.util.List;
 
 @RestController
-public class SearchController {
+public class
+SearchController {
     final IRepository repository;
     final ISessionManager sessionManager;
 
@@ -24,14 +25,23 @@ public class SearchController {
     public List<Commodity> search(@RequestHeader(AUTH_TOKEN) String authToken, @RequestParam(SEARCH_BY) String searchBy, @RequestParam(QUERY) String query) {
         if(sessionManager.isValidToken(authToken)) {
             if(searchBy.equals(CATEGORY)) {
-                return repository.getCommodityList().stream().filter(commodity -> commodity.getCategories().contains(query)).toList();
+                return repository.getCommodityList().stream().filter(
+                        commodity -> commodity.getCategories().contains(query)
+                ).toList();
             }
             if(searchBy.equals(NAME)) {
-                return repository.getCommodityList().stream().filter(commodity -> commodity.getName().contains(query)).toList();
+                return repository.getCommodityList().stream().filter(
+                        commodity -> commodity.getName().contains(query)
+                ).toList();
+            }
+            if(searchBy.equals(PROVIDER)) {
+                return repository.getCommodityList().stream().filter(
+                        commodity -> repository.getProvider(commodity.getProviderId()).get().getName().equals(query)
+                ).toList();
             }
         }
         // TODO exception handling
-            return null;
+        return null;
     }
 
 

@@ -42,13 +42,11 @@ public class AuthController {
             return null;
         }
         String authToken = sessionManager.addSession(username);
-        Map<String, String> response = new HashMap<>();
-        response.put("Auth-token", authToken);
-        response.put("status", "success");
-        return response;
+        return Map.of(AUTH_TOKEN, authToken,
+                      STATUS, SUCCESS);
     }
 
-    @PostMapping
+    @PostMapping("/register")
     public Map<String, String> register(@RequestBody Map<String, String> body) {
         String username = body.get(USERNAME);
         String password = body.get(PASSWORD);

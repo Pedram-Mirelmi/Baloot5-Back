@@ -2,8 +2,11 @@ package ie.baloot5.controller;
 
 import ie.baloot5.data.IRepository;
 import ie.baloot5.data.ISessionManager;
+import ie.baloot5.exception.InvalidIdException;
+import ie.baloot5.exception.InvalidValueException;
 import ie.baloot5.model.Comment;
 import ie.baloot5.model.User;
+import jakarta.websocket.server.PathParam;
 import org.springframework.web.bind.annotation.*;
 
 import static ie.baloot5.Utils.Constants.*;
@@ -21,8 +24,17 @@ public class CommentController {
         this.sessionManager = sessionManager;
     }
 
-    @GetMapping
-    public List<Comment> getCommodityComments(@RequestHeader(AUTH_TOKEN) String authToken, @RequestParam("commodityId") long commodityId) {
+    @GetMapping("/comments/{commentId}")
+    public Comment getSingleComment(@RequestHeader(AUTH_TOKEN) String authToken, @PathVariable(COMMENT_ID) long commentId) {
+        if(sessionManager.isValidToken(authToken)) {
+            return repository.getComment(commentId).get();
+        }
+        // TODO exception handling
+        return null;
+    }
+
+    @GetMapping("/comments")
+    public List<Comment> getCommodityComments(@RequestHeader(AUTH_TOKEN) String authToken, @RequestParam(COMMODITY_ID) long commodityId) {
         if(sessionManager.isValidToken(authToken)) {
             return repository.getCommentsForCommodity(commodityId);
         }
@@ -30,7 +42,7 @@ public class CommentController {
         return null;
     }
 
-    @GetMapping
+    @PostMapping("/comments")
     public Map<String, String> addComment(@RequestHeader(AUTH_TOKEN) String authToken, @RequestBody Comment comment) {
         if(sessionManager.isValidToken(authToken)) {
             User user = sessionManager.getUser(authToken).get();
@@ -41,11 +53,11 @@ public class CommentController {
         return null;
     }
 
-    @PostMapping
-    public Map<String, String> rateComment(@RequestHeader(AUTH_TOKEN) String authToken, @RequestBody Map<String, Long> body) {
+    @PostMapping("/commentsVotes")
+    public Map<String, String> rateComment(@RequestHeader(AUTH_TOKEN) String authToken, @RequestBody Map<String, Long> body) throws InvalidIdException, InvalidValueException {
         if(sessionManager.isValidToken(authToken)) {
             User user = sessionManager.getUser(authToken).get();
-            repository.addRating(user.getUsername(), body.get(COMMODITY_ID), body.get(COMMENT_ID));
+            repository.addVote(user.getUsername(), body.get(COMMENT_ID), (int)body.get(VOTE).longValue());
             return Map.of(STATUS, SUCCESS);
         }
         // TODO exception handling
