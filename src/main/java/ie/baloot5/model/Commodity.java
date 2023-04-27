@@ -2,6 +2,7 @@ package ie.baloot5.model;
 
 
 import com.google.gson.annotations.SerializedName;
+import ie.baloot5.exception.NotEnoughAmountException;
 
 import java.util.List;
 import java.util.Objects;
@@ -99,9 +100,9 @@ public class Commodity {
         this.inStock += newAmount;
     }
 
-    public void subtractStock(long amount) {
+    public void subtractStock(long amount) throws NotEnoughAmountException{
         if(inStock < amount) {
-            throw new IllegalArgumentException("Not enough in stock");
+            throw new NotEnoughAmountException("Not enough in stock");
         }
         inStock -= amount;
     }

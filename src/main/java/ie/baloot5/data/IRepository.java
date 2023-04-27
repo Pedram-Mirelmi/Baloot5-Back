@@ -40,9 +40,9 @@ public interface IRepository {
 
     List<Commodity> searchCommoditiesByName(@NotNull String name);
 
-    void addToBuyList(@NotNull String username, long commodityId, long count) throws IllegalArgumentException, NotEnoughAmountException, InvalidIdException;
+    void addToBuyList(@NotNull String username, long commodityId, long count) throws NotEnoughAmountException, InvalidIdException;
 
-    void removeFromBuyList(@NotNull String username, long commodityId, long count) throws IllegalArgumentException, NotEnoughAmountException;
+    void removeFromBuyList(@NotNull String username, long commodityId, long count) throws NotEnoughAmountException;
 
     void clearRepository();
 
@@ -75,5 +75,7 @@ public interface IRepository {
     List<Commodity> getRecommendedCommodities(String username);
 
     Optional<Comment> getComment(long commentId);
+
+    boolean authenticate(String username, String password);
 }
 

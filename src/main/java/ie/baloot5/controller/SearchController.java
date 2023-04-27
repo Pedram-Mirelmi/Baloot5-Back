@@ -2,6 +2,8 @@ package ie.baloot5.controller;
 
 import ie.baloot5.data.IRepository;
 import ie.baloot5.data.ISessionManager;
+import ie.baloot5.exception.InvalidRequestParamsException;
+import ie.baloot5.exception.InvalidValueException;
 import ie.baloot5.model.Commodity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -39,9 +41,9 @@ SearchController {
                         commodity -> repository.getProvider(commodity.getProviderId()).get().getName().equals(query)
                 ).toList();
             }
+            throw new InvalidRequestParamsException("Invalid search-by parameter");
         }
-        // TODO exception handling
-        return null;
+        throw new InvalidValueException("Authentication token invalid");
     }
 
 

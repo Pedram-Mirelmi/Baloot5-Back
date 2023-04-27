@@ -2,9 +2,11 @@ package ie.baloot5.controller;
 
 import ie.baloot5.data.IRepository;
 import ie.baloot5.data.ISessionManager;
+import ie.baloot5.exception.InvalidIdException;
+import ie.baloot5.exception.InvalidRequestParamsException;
+import ie.baloot5.exception.InvalidValueException;
 import ie.baloot5.model.Commodity;
 import ie.baloot5.model.User;
-import jakarta.websocket.server.PathParam;
 import org.springframework.web.bind.annotation.*;
 
 import static ie.baloot5.Utils.Constants.*;
@@ -22,14 +24,15 @@ public class CommodityController {
     }
 
     @GetMapping("/commodities/{commodityId}")
-    public Commodity getSingleCommodity(@RequestHeader(AUTH_TOKEN) String authToken, @PathParam("commodityId") int commodityId) {
+    public Commodity getSingleCommodity(@RequestHeader(value = AUTH_TOKEN, required = false) String authToken, @PathVariable("commodityId") int commodityId) {
         if(sessionManager.isValidToken(authToken)) {
-            var commodity = repository.getCommodityById(commodityId);
-            // TODO exception handling
-            return commodity.orElse(null);
+            try {
+                return repository.getCommodityById(commodityId).get();
+            } catch (NoSuchElementException e) {
+                throw new InvalidIdException("Invalid commodity Id");
+            }
         }
-        // TODO exception handling
-        return null;
+        throw new InvalidValueException("Authentication token not valid");
     }
 
     @GetMapping("/commodities")
@@ -47,9 +50,9 @@ public class CommodityController {
             if(sortBy.get().equals(RATING)) {
                 return repository.getCommodityList().stream().sorted(Comparator.comparingDouble(Commodity::getRating)).toList();
             }
+            throw new InvalidRequestParamsException("Invalid sort-by parameter");
         }
-        // TODO exception handling
-        return new ArrayList<>();
+        throw new InvalidValueException("Authentication token not valid");
     }
 
     @PostMapping("/commoditiesRates")
@@ -61,17 +64,20 @@ public class CommodityController {
             repository.addRating(user.getUsername(), commodityId, rate);
             return Map.of(STATUS, SUCCESS);
         }
-        // TODO exception handling
-        return new HashMap<>();
+        throw new InvalidValueException("Authentication token not valid");
     }
 
     @GetMapping("/recommended")
     public List<Commodity> getRecommended(@RequestHeader(AUTH_TOKEN) String authToken) {
         if(sessionManager.isValidToken(authToken)) {
-            User user = sessionManager.getUser(authToken).get();
-            return repository.getRecommendedCommodities(user.getUsername());
+            try {
+                User user = sessionManager.getUser(authToken).get();
+                return repository.getRecommendedCommodities(user.getUsername());
+            }
+            catch (NoSuchElementException | InvalidIdException e) {
+                throw new InvalidValueException("Authentication token not valid");
+            }
         }
-        // TODO exception handling
-        return null;
+        throw new InvalidValueException("Authentication token not valid");
     }
 }

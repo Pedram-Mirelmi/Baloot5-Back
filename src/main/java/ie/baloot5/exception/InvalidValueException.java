@@ -1,6 +1,6 @@
 package ie.baloot5.exception;
 
-public class InvalidValueException extends Exception{
+public class InvalidValueException extends RuntimeException {
     public InvalidValueException(String message) {
         super(message);
     }

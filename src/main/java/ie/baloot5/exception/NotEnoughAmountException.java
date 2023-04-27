@@ -1,6 +1,6 @@
 package ie.baloot5.exception;
 
-public class NotEnoughAmountException extends Exception {
+public class NotEnoughAmountException extends RuntimeException {
 
     public NotEnoughAmountException(String message) {
         super(message);
