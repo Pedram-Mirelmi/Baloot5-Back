@@ -3,11 +3,14 @@ package ie.baloot5.controller;
 import ie.baloot5.data.IRepository;
 import ie.baloot5.data.ISessionManager;
 import ie.baloot5.exception.InvalidIdException;
+import ie.baloot5.exception.InvalidRequestParamsException;
 import ie.baloot5.exception.InvalidValueException;
 import ie.baloot5.model.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 
 import static ie.baloot5.Utils.Constants.*;
 
@@ -25,18 +28,28 @@ public class UserController {
     @GetMapping("/api/users/{username}")
     public User getUser(@RequestHeader(AUTH_TOKEN) String authToken, @PathVariable(USERNAME) String username) {
         if(sessionManager.isValidToken(authToken)) {
-            return repository.getUser(username).get();
+            try {
+                return repository.getUser(username).get();
+            }
+            catch (NoSuchElementException e) {
+                throw new InvalidIdException("Invalid username");
+            }
         }
-        return null;
+        throw new InvalidValueException("Authentication token invalid");
     }
 
     @PostMapping("/api/addCredit")
     public Map<String, String> addCredit(@RequestHeader(AUTH_TOKEN) String authToken, @RequestBody Map<String, Long> body) throws InvalidIdException, InvalidValueException {
         if(sessionManager.isValidToken(authToken)) {
-            Long amount = body.get(AMOUNT);
-            repository.addCredit(sessionManager.getUser(authToken).get().getUsername(), amount);
-            return Map.of(STATUS, SUCCESS);
+            try {
+                Long amount = Objects.requireNonNull(body.get(AMOUNT));
+                repository.addCredit(sessionManager.getUser(authToken).get().getUsername(), amount);
+                return Map.of(STATUS, SUCCESS);
+            }
+            catch (NullPointerException e) {
+                throw new InvalidRequestParamsException("Invalid \"amount\" in request");
+            }
         }
-        return null;
+        throw new InvalidValueException("Authentication token invalid");
     }
 }

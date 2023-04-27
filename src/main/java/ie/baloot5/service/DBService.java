@@ -65,10 +65,10 @@ public class DBService implements IRepository {
     @Override
     public void addComment(@NotNull String username, long commodityId, @NotNull String commentText) throws IllegalArgumentException {
         if (!users.containsKey(username)) {
-            throw new IllegalArgumentException("Not Such User!");
+            throw new InvalidIdException("Not Such User!");
         }
         if (!commodities.containsKey(commodityId)) {
-            throw new IllegalArgumentException("Not Such Commodity");
+            throw new InvalidIdException("Not Such Commodity");
         }
         long commentId = comments.size() + 1;
         comments.put(commentId, new Comment(commentId, commodityId, username, commentText, LocalDateTime.now().toString()));
@@ -136,7 +136,7 @@ public class DBService implements IRepository {
     @Override
     public Optional<Provider> getProvider(long id) {
         if (!providers.containsKey(id))
-            throw new IllegalArgumentException("No such provider");
+            throw new InvalidIdException("No such provider");
         return Optional.ofNullable(providers.get(id));
     }
 
@@ -201,7 +201,6 @@ public class DBService implements IRepository {
             throw new NotEnoughAmountException("Not enough in stock");
         if (!this.users.containsKey(username))
             throw new InvalidIdException("invalid username");
-//        commodity.setInStock(commodity.getInStock() - count);
         long inListCount = shoppingList.get(username, commodityId) == null ? 0 : Objects.requireNonNull(shoppingList.get(username, commodityId));
         shoppingList.put(username, commodityId, count + inListCount);
     }
@@ -230,9 +229,9 @@ public class DBService implements IRepository {
     @Override
     public float addRating(@NotNull String username, long commodityId, float rate) {
         if (!users.containsKey(username))
-            throw new IllegalArgumentException("No Such username");
+            throw new InvalidIdException("No Such username");
         if (!commodities.containsKey(commodityId))
-            throw new IllegalArgumentException("No Such commodity");
+            throw new InvalidIdException("No Such commodity");
         rates.put(username, commodityId, rate);
         var newRating = rates.column(commodityId).values().stream().collect(Collectors.averagingDouble((Float::floatValue))).floatValue();
         commodities.get(commodityId).setRating(newRating);
@@ -359,5 +358,10 @@ public class DBService implements IRepository {
     @Override
     public Optional<Comment> getComment(long commentId) {
         return Optional.ofNullable(comments.get(commentId));
+    }
+
+    @Override
+    public boolean authenticate(String username, String password) {
+        return false;
     }
 }
