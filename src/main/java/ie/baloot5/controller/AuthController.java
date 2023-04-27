@@ -40,7 +40,7 @@ public class AuthController {
         if(username == null || password == null) {
             return null;
         }
-        String authToken = sessionManager.addSession(username);
+        String authToken = sessionManager.addSession(username, password);
         return Map.of(AUTH_TOKEN, authToken,
                       STATUS, SUCCESS);
     }
@@ -55,7 +55,7 @@ public class AuthController {
         Map<String, String> response = new HashMap<>();
         try {
             repository.addUser(new User(username, password, email, birthDate, address, 0));
-            String authToken = sessionManager.addSession(username);
+            String authToken = sessionManager.addSession(username, password);
             return Map.of(STATUS, SUCCESS,
                      AUTH_TOKEN, authToken);
         }
