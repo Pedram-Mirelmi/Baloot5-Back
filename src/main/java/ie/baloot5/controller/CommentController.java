@@ -24,7 +24,7 @@ public class CommentController {
         this.sessionManager = sessionManager;
     }
 
-    @GetMapping("/comments/{commentId}")
+    @GetMapping("/api/comments/{commentId}")
     public Comment getSingleComment(@RequestHeader(AUTH_TOKEN) String authToken, @PathVariable(COMMENT_ID) long commentId) {
         if(sessionManager.isValidToken(authToken)) {
             return repository.getComment(commentId).get();
@@ -33,7 +33,7 @@ public class CommentController {
         return null;
     }
 
-    @GetMapping("/comments")
+    @GetMapping("/api/comments")
     public List<Comment> getCommodityComments(@RequestHeader(AUTH_TOKEN) String authToken, @RequestParam(COMMODITY_ID) long commodityId) {
         if(sessionManager.isValidToken(authToken)) {
             return repository.getCommentsForCommodity(commodityId);
@@ -42,7 +42,7 @@ public class CommentController {
         return null;
     }
 
-    @PostMapping("/comments")
+    @PostMapping("/api/comments")
     public Map<String, String> addComment(@RequestHeader(AUTH_TOKEN) String authToken, @RequestBody Comment comment) {
         if(sessionManager.isValidToken(authToken)) {
             User user = sessionManager.getUser(authToken).get();
@@ -53,7 +53,7 @@ public class CommentController {
         return null;
     }
 
-    @PostMapping("/commentsVotes")
+    @PostMapping("/api/commentsVotes")
     public Map<String, String> rateComment(@RequestHeader(AUTH_TOKEN) String authToken, @RequestBody Map<String, Long> body) throws InvalidIdException, InvalidValueException {
         if(sessionManager.isValidToken(authToken)) {
             User user = sessionManager.getUser(authToken).get();

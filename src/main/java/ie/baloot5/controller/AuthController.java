@@ -14,7 +14,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
-//@CrossOrigin(origins = "http://localhost:9090")
 @RestController
 public class AuthController {
 
@@ -26,7 +25,7 @@ public class AuthController {
         this.sessionManager = sessionManager;
     }
 
-    @GetMapping("/logout")
+    @GetMapping("/api/logout")
     public Map<String, String> logout(@RequestHeader(Constants.AUTH_TOKEN) String authToken) {
         sessionManager.removeSession(authToken);
         Map<String, String> response = new HashMap<>();
@@ -34,7 +33,7 @@ public class AuthController {
         return response;
     }
 
-    @PostMapping("/login")
+    @PostMapping("/api/login")
     public Map<String, String> login(@RequestBody Map<String, String> body) throws NoSuchAlgorithmException {
         String username = body.get("username");
         String password = body.get("password");
@@ -46,7 +45,7 @@ public class AuthController {
                       STATUS, SUCCESS);
     }
 
-    @PostMapping("/register")
+    @PostMapping("/api/register")
     public Map<String, String> register(@RequestBody Map<String, String> body) {
         String username = body.get(USERNAME);
         String password = body.get(PASSWORD);

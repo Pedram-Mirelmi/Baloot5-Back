@@ -29,7 +29,7 @@ public class ShoppingController {
 
 
 
-    @PostMapping("/shoppingList")
+    @PostMapping("/api/shoppingList")
     public Map<String, String> addToShoppingList(@RequestHeader(AUTH_TOKEN) String authToken, @RequestBody Map<String, Long> body) throws InvalidIdException, NotEnoughAmountException {
         if(sessionManager.isValidToken(authToken)) {
             User user = sessionManager.getUser(authToken).get();
@@ -42,7 +42,7 @@ public class ShoppingController {
         return null;
     }
 
-    @GetMapping("/shoppingList")
+    @GetMapping("/api/shoppingList")
     public List<ShoppingItem> getShoppingList(@RequestHeader(AUTH_TOKEN) String authToken) throws InvalidIdException {
         if(sessionManager.isValidToken(authToken)) {
             User user = sessionManager.getUser(authToken).get();
@@ -52,7 +52,7 @@ public class ShoppingController {
         return null;
     }
 
-    @DeleteMapping("/shoppingList")
+    @DeleteMapping("/api/shoppingList")
     public Map<String, String> removeFromShoppingList(@RequestHeader(AUTH_TOKEN) String authToken, @RequestBody Map<String, Long> body) throws NotEnoughAmountException {
         if(sessionManager.isValidToken(authToken)) {
             User user = sessionManager.getUser(authToken).get();
@@ -65,7 +65,7 @@ public class ShoppingController {
         return null;
     }
 
-    @GetMapping("/purchasedList")
+    @GetMapping("/api/purchasedList")
     public List<ShoppingItem> getPurchasedList(@RequestHeader(AUTH_TOKEN) String authToken) throws InvalidIdException {
         if(sessionManager.isValidToken(authToken)) {
             return repository.getPurchasedList(sessionManager.getUser(authToken).get().getUsername());
@@ -73,7 +73,7 @@ public class ShoppingController {
         return null;
     }
 
-    @GetMapping("/pay")
+    @GetMapping("/api/pay")
     public Map<String, String> purchase(@RequestHeader(AUTH_TOKEN) String authToken, @RequestParam("discountCode") Optional<String> discountCode) throws InvalidIdException, NotEnoughAmountException {
         if(sessionManager.isValidToken(authToken)) {
             User user = sessionManager.getUser(authToken).get();
@@ -88,7 +88,7 @@ public class ShoppingController {
         return null;
     }
 
-    @GetMapping("/discount")
+    @GetMapping("/api/discount")
     public Map<String, String> validateDiscountCode(@RequestHeader(AUTH_TOKEN) String authToken,
                                                     @RequestParam("discountCode") String discountCode) {
         if(sessionManager.isValidToken(authToken)) {

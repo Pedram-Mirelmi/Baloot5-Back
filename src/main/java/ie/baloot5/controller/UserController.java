@@ -22,7 +22,7 @@ public class UserController {
         this.sessionManager = sessionManager;
     }
 
-    @GetMapping("/users/{username}")
+    @GetMapping("/api/users/{username}")
     public User getUser(@RequestHeader(AUTH_TOKEN) String authToken, @PathVariable(USERNAME) String username) {
         if(sessionManager.isValidToken(authToken)) {
             return repository.getUser(username).get();
@@ -30,7 +30,7 @@ public class UserController {
         return null;
     }
 
-    @PostMapping("/addCredit")
+    @PostMapping("/api/addCredit")
     public Map<String, String> addCredit(@RequestHeader(AUTH_TOKEN) String authToken, @RequestBody Map<String, Long> body) throws InvalidIdException, InvalidValueException {
         if(sessionManager.isValidToken(authToken)) {
             Long amount = body.get(AMOUNT);

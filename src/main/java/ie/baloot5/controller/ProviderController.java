@@ -23,7 +23,7 @@ public class ProviderController {
         this.sessionManager = sessionManager;
     }
 
-    @GetMapping("/providers")
+    @GetMapping("/api/providers")
     public Provider getProvider(@RequestHeader(AUTH_TOKEN) String authToken, @RequestParam(PROVIDER_ID) long providerId) {
         if(sessionManager.isValidToken(authToken)) {
             Optional<Provider> provider = repository.getProvider(providerId);

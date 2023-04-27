@@ -21,7 +21,7 @@ public class CommodityController {
         this.sessionManager = sessionManager;
     }
 
-    @GetMapping("/commodities/{commodityId}")
+    @GetMapping("/api/commodities/{commodityId}")
     public Commodity getSingleCommodity(@RequestHeader(AUTH_TOKEN) String authToken, @PathParam("commodityId") int commodityId) {
         if(sessionManager.isValidToken(authToken)) {
             var commodity = repository.getCommodityById(commodityId);
@@ -32,9 +32,9 @@ public class CommodityController {
         return null;
     }
 
-    @GetMapping("/commodities")
-    public List<Commodity> sortCommodities(@RequestHeader(AUTH_TOKEN) String authToken, @RequestParam(value = SORT_BY) Optional<String> sortBy) {
-        if(sessionManager.isValidToken(authToken)) {
+    @GetMapping("/api/commodities")
+    public List<Commodity> sortCommodities(@RequestHeader(value = AUTH_TOKEN, required = false) String authToken, @RequestParam(value = SORT_BY) Optional<String> sortBy) {
+        if(true || sessionManager.isValidToken(authToken)) {
             if(sortBy.isEmpty()) {
                 return repository.getCommodityList();
             }
@@ -52,7 +52,7 @@ public class CommodityController {
         return new ArrayList<>();
     }
 
-    @PostMapping("/commoditiesRates")
+    @PostMapping("/api/commoditiesRates")
     public Map<String, String> rateCommodity(@RequestHeader(AUTH_TOKEN) String authToken, @RequestBody Map<String, String> body) {
         if(sessionManager.isValidToken(authToken)) {
             long commodityId = Long.parseLong(body.get(COMMODITY_ID));
@@ -65,7 +65,7 @@ public class CommodityController {
         return new HashMap<>();
     }
 
-    @GetMapping("/recommended")
+    @GetMapping("/api/recommended")
     public List<Commodity> getRecommended(@RequestHeader(AUTH_TOKEN) String authToken) {
         if(sessionManager.isValidToken(authToken)) {
             User user = sessionManager.getUser(authToken).get();
