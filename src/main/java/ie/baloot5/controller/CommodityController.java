@@ -8,6 +8,7 @@ import ie.baloot5.exception.InvalidValueException;
 import ie.baloot5.model.Commodity;
 import ie.baloot5.model.CommodityDTO;
 import ie.baloot5.model.User;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.web.bind.annotation.*;
 
 import static ie.baloot5.Utils.Constants.*;
@@ -51,7 +52,7 @@ public class CommodityController {
                 // searching
                 result = doSearch(query, searchBy);
                 // sorting
-                doSort(result, sortBy);
+                result = doSort(result, sortBy);
                 // adding inCart field
                 User user = sessionManager.getUser(authToken).get();
                 var stream = result.stream().map(
@@ -103,12 +104,12 @@ public class CommodityController {
         throw new InvalidValueException("Authentication token not valid");
     }
 
-    private void doSort(List<Commodity> result, String sortBy) {
+    private List<Commodity> doSort(@NotNull List<Commodity> result, String sortBy) {
         if(sortBy.equals(NAME)) {
-            result.sort(Comparator.comparing(Commodity::getName));
+            return result.stream().sorted(Comparator.comparing(Commodity::getName)).toList();
         }
         else if(sortBy.equals(PRICE)) {
-            result.sort(Comparator.comparing(Commodity::getPrice));
+            return result.stream().sorted(Comparator.comparing(Commodity::getPrice)).toList();
         }
         else {
             throw new InvalidRequestParamsException("Invalid sort-by parameter");
