@@ -90,11 +90,13 @@ public class CommodityController {
     }
 
     @GetMapping("/api/recommended")
-    public List<CommodityDTO> getRecommended(@RequestHeader(AUTH_TOKEN) String authToken) {
+    public List<CommodityDTO> getRecommended(@RequestHeader(AUTH_TOKEN) String authToken,
+                                             @RequestParam(COMMODITY_ID) long commodityId) {
         if(sessionManager.isValidToken(authToken)) {
             try {
                 User user = sessionManager.getUser(authToken).get();
-                return repository.getRecommendedCommodities(user.getUsername()).stream().map(
+                var recommendeds = repository.getRecommendedCommodities(user.getUsername(), commodityId);
+                return repository.getRecommendedCommodities(user.getUsername(), commodityId).stream().map(
                             commodity -> new CommodityDTO(commodity,
                                     repository.getInShoppingListCount(user.getUsername(), commodity.getId()),
                                     repository.getCommodityRateCount(commodity.getId()),
