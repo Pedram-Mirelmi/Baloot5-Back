@@ -22,7 +22,7 @@ SearchController {
         this.sessionManager = sessionManager;
     }
 
-    @GetMapping("/search")
+    @GetMapping("/api/search")
     public List<Commodity> search(@RequestHeader(AUTH_TOKEN) String authToken, @RequestParam(SEARCH_BY) String searchBy, @RequestParam(QUERY) String query) {
         if(sessionManager.isValidToken(authToken)) {
             if(searchBy.equals(CATEGORY)) {

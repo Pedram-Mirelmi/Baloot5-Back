@@ -26,7 +26,7 @@ public class UserController {
         this.sessionManager = sessionManager;
     }
 
-    @GetMapping("/users/{username}")
+    @GetMapping("/api/users/{username}")
     public User getUser(@RequestHeader(AUTH_TOKEN) String authToken, @PathVariable(USERNAME) String username) {
         if(sessionManager.isValidToken(authToken)) {
             try {
@@ -39,7 +39,7 @@ public class UserController {
         throw new InvalidValueException("Authentication token invalid");
     }
 
-    @PostMapping("/addCredit")
+    @PostMapping("/api/addCredit")
     public Map<String, String> addCredit(@RequestHeader(AUTH_TOKEN) String authToken, @RequestBody Map<String, Long> body) throws InvalidIdException, InvalidValueException {
         if(sessionManager.isValidToken(authToken)) {
             try {

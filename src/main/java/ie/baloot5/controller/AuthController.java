@@ -8,6 +8,7 @@ import ie.baloot5.data.ISessionManager;
 import ie.baloot5.exception.InvalidRequestParamsException;
 import ie.baloot5.exception.InvalidIdException;
 import ie.baloot5.model.User;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.NoSuchAlgorithmException;
@@ -22,14 +23,13 @@ public class AuthController {
     final IRepository repository;
     final ISessionManager sessionManager;
 
-    public AuthController(IRepository repository, ISessionManager sessionManager) throws NoSuchAlgorithmException {
+    public AuthController(IRepository repository, ISessionManager sessionManager) {
         this.repository = repository;
         this.sessionManager = sessionManager;
         sessionManager.addSession("amir", "1234");
     }
 
-
-    @GetMapping("/logout")
+    @GetMapping("/api/logout")
     public Map<String, String> logout(@RequestHeader(Constants.AUTH_TOKEN) String authToken) {
         sessionManager.removeSession(authToken);
         Map<String, String> response = new HashMap<>();
@@ -37,7 +37,7 @@ public class AuthController {
         return response;
     }
 
-    @PostMapping("/login")
+    @PostMapping("/api/login")
     public Map<String, String> login(@RequestBody Map<String, String> body) throws NoSuchAlgorithmException {
         String username = body.get("username");
         String password = body.get("password");
@@ -49,7 +49,7 @@ public class AuthController {
                       STATUS, SUCCESS);
     }
 
-    @PostMapping("/register")
+    @PostMapping("/api/register")
     public Map<String, String> register(@RequestBody Map<String, String> body) {
         try {
             String username = Objects.requireNonNull(body.get(USERNAME));

@@ -25,7 +25,7 @@ public class CommentController {
         this.sessionManager = sessionManager;
     }
 
-    @GetMapping("/comments/{commentId}")
+    @GetMapping("/api/comments/{commentId}")
     public Comment getSingleComment(@RequestHeader(AUTH_TOKEN) String authToken, @PathVariable(COMMENT_ID) long commentId) throws InvalidIdException{
         if(sessionManager.isValidToken(authToken)) {
             try {
@@ -38,7 +38,7 @@ public class CommentController {
         throw new InvalidValueException("Authentication token not valid");
     }
 
-    @GetMapping("/comments")
+    @GetMapping("/api/comments")
     public List<Comment> getCommodityComments(@RequestHeader(AUTH_TOKEN) String authToken, @RequestParam(COMMODITY_ID) long commodityId) {
         if(sessionManager.isValidToken(authToken)) {
             return repository.getCommentsForCommodity(commodityId);
@@ -46,7 +46,7 @@ public class CommentController {
         throw new InvalidValueException("Authentication token not valid");
     }
 
-    @PostMapping("/comments")
+    @PostMapping("/api/comments")
     public Map<String, String> addComment(@RequestHeader(AUTH_TOKEN) String authToken, @RequestBody Comment comment) throws InvalidValueException{
         if(sessionManager.isValidToken(authToken)) {
             try {
@@ -61,7 +61,7 @@ public class CommentController {
         throw new InvalidValueException("Authentication token not valid");
     }
 
-    @PostMapping("/commentsVotes")
+    @PostMapping("/api/commentsVotes")
     public Map<String, String> rateComment(@RequestHeader(AUTH_TOKEN) String authToken, @RequestBody Map<String, Long> body) throws InvalidIdException, InvalidValueException {
         if(sessionManager.isValidToken(authToken)) {
             try {
