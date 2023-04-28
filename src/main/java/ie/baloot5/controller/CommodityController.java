@@ -13,7 +13,6 @@ import static ie.baloot5.Utils.Constants.*;
 
 import java.util.*;
 
-@CrossOrigin(origins = "http://localhost:9090")
 @RestController
 public class CommodityController {
     final IRepository repository;

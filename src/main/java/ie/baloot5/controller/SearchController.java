@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import static ie.baloot5.Utils.Constants.*;
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:9090")
 @RestController
 public class
 SearchController {
