@@ -71,7 +71,7 @@ public interface IRepository {
 
     boolean hasUserUsedDiscount(String discountCode, String username) throws InvalidIdException;
 
-    List<Commodity> getRecommendedCommodities(String username);
+    List<Commodity> getRecommendedCommodities(String username, long commodityId);
 
     Optional<Comment> getComment(long commentId);
 

@@ -10,6 +10,7 @@ import com.google.common.collect.HashBasedTable;
 import com.google.gson.Gson;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.EscapedErrors;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -357,9 +358,18 @@ public class DBService implements IRepository {
     }
 
     @Override
-    public List<Commodity> getRecommendedCommodities(String username) {
-        // TODO implement recommendation
-        return new ArrayList<>();
+    public List<Commodity> getRecommendedCommodities(String username, long commodityId) {
+        HashMap<Long, Float> scores = new HashMap<>();
+        Commodity commodity = commodities.get(commodityId);
+        commodities.forEach((cId, c) -> {
+            var commonCategories = new HashSet<>(commodity.getCategories());
+            commonCategories.addAll(c.getCategories());
+            scores.put(cId, 11 * commonCategories.size() + c.getRating());
+        });
+        scores.remove(commodityId);
+        return scores.entrySet().stream().sorted(Map.Entry.comparingByKey()).map(
+                    cid -> commodities.get(cid.getKey())
+                ).toList().subList(0, 5);
     }
 
     @Override
