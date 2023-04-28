@@ -32,7 +32,9 @@ public class CommodityController {
             try {
                 User user = sessionManager.getUser(authToken).get();
                 return new CommodityDTO(repository.getCommodityById(commodityId).get(),
-                        repository.getInShoppingListCount(user.getUsername(), commodityId), repository.getCommodityRateCount(commodityId));
+                        repository.getInShoppingListCount(user.getUsername(), commodityId),
+                        repository.getCommodityRateCount(commodityId),
+                        repository.getProvider(repository.getCommodityById(commodityId).get().getProviderId()).get().getName());
             } catch (NoSuchElementException e) {
                 throw new InvalidIdException("Invalid commodity Id");
             }
@@ -58,7 +60,8 @@ public class CommodityController {
                 var stream = result.stream().map(
                         commodity -> new CommodityDTO(commodity,
                                 repository.getInShoppingListCount(user.getUsername(), commodity.getId()),
-                                repository.getCommodityRateCount(commodity.getId()))
+                                repository.getCommodityRateCount(commodity.getId()),
+                                repository.getProvider(commodity.getProviderId()).get().getName())
                 );
                 if(onlyAvailable) {
                     stream = stream.filter(commodityDTO -> commodityDTO.getInStock() > 0);
@@ -93,7 +96,8 @@ public class CommodityController {
                 return repository.getRecommendedCommodities(user.getUsername()).stream().map(
                             commodity -> new CommodityDTO(commodity,
                                     repository.getInShoppingListCount(user.getUsername(), commodity.getId()),
-                                    repository.getCommodityRateCount(commodity.getId()))
+                                    repository.getCommodityRateCount(commodity.getId()),
+                                    repository.getProvider(commodity.getProviderId()).get().getName())
 
                 ).toList();
             }
