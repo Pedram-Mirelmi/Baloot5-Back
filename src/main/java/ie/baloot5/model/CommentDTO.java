@@ -5,7 +5,7 @@ public class CommentDTO extends Comment{
 
 
     public CommentDTO(Comment comment, int usersVote) {
-        super(comment.getCommentId(), comment.getCommodityId(), comment.getUsername(), comment.getText(), comment.getDate());
+        super(comment.getCommentId(), comment.getCommodityId(), comment.getUsername(), comment.getUserEmail(), comment.getText(), comment.getDate());
         this.usersVote = usersVote;
     }
 

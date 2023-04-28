@@ -28,12 +28,13 @@ public class CommentController {
     }
 
     @GetMapping("/api/comments/{commentId}")
-    public CommentDTO getSingleComment(@RequestHeader(AUTH_TOKEN) String authToken, @PathVariable(COMMENT_ID) long commentId) throws InvalidIdException{
+    public CommentDTO getSingleComment(@RequestHeader(AUTH_TOKEN) String authToken,
+                                       @PathVariable(COMMENT_ID) long commentId) throws InvalidIdException{
         if(sessionManager.isValidToken(authToken)) {
             try {
                 User user = sessionManager.getUser(authToken).get();
                 return new CommentDTO(repository.getComment(commentId).get(),
-                        repository.getUserVoteForComment(user.getUsername(), commentId).get()) ;
+                        repository.getUserVoteForComment(user.getUsername(), commentId)) ;
             }
             catch (NoSuchElementException e) {
                 throw new InvalidIdException("Invalid comment Id");
@@ -47,7 +48,7 @@ public class CommentController {
         if(sessionManager.isValidToken(authToken)) {
             User user = sessionManager.getUser(authToken).get();
             return repository.getCommentsForCommodity(commodityId).stream().map(
-                    comment -> new CommentDTO(comment, repository.getUserVoteForComment(user.getUsername(), comment.getCommentId()).get())
+                    comment -> new CommentDTO(comment, repository.getUserVoteForComment(user.getUsername(), comment.getCommentId()))
             ).toList();
         }
         throw new InvalidValueException("Authentication token not valid");

@@ -31,7 +31,7 @@ public class CommodityController {
             try {
                 User user = sessionManager.getUser(authToken).get();
                 return new CommodityDTO(repository.getCommodityById(commodityId).get(),
-                        repository.getInShoppingListCount(user.getUsername(), commodityId).get(), repository.getCommodityRateCount(commodityId));
+                        repository.getInShoppingListCount(user.getUsername(), commodityId), repository.getCommodityRateCount(commodityId));
             } catch (NoSuchElementException e) {
                 throw new InvalidIdException("Invalid commodity Id");
             }
@@ -56,7 +56,7 @@ public class CommodityController {
                 User user = sessionManager.getUser(authToken).get();
                 var stream = result.stream().map(
                         commodity -> new CommodityDTO(commodity,
-                                repository.getInShoppingListCount(user.getUsername(), commodity.getId()).get(),
+                                repository.getInShoppingListCount(user.getUsername(), commodity.getId()),
                                 repository.getCommodityRateCount(commodity.getId()))
                 );
                 if(onlyAvailable) {
@@ -91,7 +91,7 @@ public class CommodityController {
                 User user = sessionManager.getUser(authToken).get();
                 return repository.getRecommendedCommodities(user.getUsername()).stream().map(
                             commodity -> new CommodityDTO(commodity,
-                                    repository.getInShoppingListCount(user.getUsername(), commodity.getId()).get(),
+                                    repository.getInShoppingListCount(user.getUsername(), commodity.getId()),
                                     repository.getCommodityRateCount(commodity.getId()))
 
                 ).toList();

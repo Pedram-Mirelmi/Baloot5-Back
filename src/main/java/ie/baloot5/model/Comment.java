@@ -1,18 +1,24 @@
 package ie.baloot5.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class Comment {
     private Long commentId;
     private String username;
+
+    @JsonIgnore
+    private String userEmail;
     private Long commodityId;
     private String text;
     private String date;
     private int likes = 0;
     private int dislikes = 0;
 
-    public Comment(Long commentId, Long commodityId, String username, String text, String date) {
+    public Comment(Long commentId, Long commodityId, String username, String userEmail, String text, String date) {
         this.commentId = commentId;
         this.commodityId = commodityId;
         this.username = username;
+        this.userEmail = userEmail;
         this.text = text;
         this.date = date;
     }
@@ -91,4 +97,11 @@ public class Comment {
         this.dislikes = dislikes;
     }
 
+    public String getUserEmail() {
+        return userEmail;
+    }
+
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
+    }
 }

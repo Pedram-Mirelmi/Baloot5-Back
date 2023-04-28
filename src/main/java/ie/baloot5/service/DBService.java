@@ -53,6 +53,7 @@ public class DBService implements IRepository {
         Comment[] commentsList = gson.fromJson(getResource(apiUri + "comments"), Comment[].class);
         for (int i = 0; i < commentsList.length; i++) {
             commentsList[i].setCommentId(i + 1L);
+            commentsList[i].setUsername(getUsernameFromEmail(commentsList[i].getUserEmail()));
             comments.put(commentsList[i].getCommentId(), commentsList[i]);
         }
 
@@ -62,8 +63,16 @@ public class DBService implements IRepository {
         }
     }
 
+    private String getUsernameFromEmail(String email) {
+        for (var user : users.values()) {
+            if (user.getEmail().equals(email))
+                return user.getUsername();
+        }
+        return null;
+    }
+
     @Override
-    public void addComment(@NotNull String username, long commodityId, @NotNull String commentText) throws IllegalArgumentException {
+    public void addComment(@NotNull String username, long commodityId, @NotNull String commentText) {
         if (!users.containsKey(username)) {
             throw new InvalidIdException("Not Such User!");
         }
@@ -71,7 +80,7 @@ public class DBService implements IRepository {
             throw new InvalidIdException("Not Such Commodity");
         }
         long commentId = comments.size() + 1;
-        comments.put(commentId, new Comment(commentId, commodityId, username, commentText, LocalDateTime.now().toString()));
+        comments.put(commentId, new Comment(commentId, commodityId, username, users.get(username).getEmail(), commentText, LocalDateTime.now().toString()));
     }
 
     @Override
@@ -321,8 +330,8 @@ public class DBService implements IRepository {
     }
 
     @Override
-    public Optional<Long> getInShoppingListCount(String username, long commodityId) {
-        return Optional.ofNullable(shoppingLists.get(username, commodityId));
+    public long getInShoppingListCount(String username, long commodityId) {
+        return Optional.ofNullable(shoppingLists.get(username, commodityId)).orElse(0L);
     }
 
     @Override
@@ -369,7 +378,7 @@ public class DBService implements IRepository {
     }
 
     @Override
-    public Optional<Integer> getUserVoteForComment(String username, long commentId) {
-        return Optional.ofNullable(votes.get(username, commentId));
+    public int getUserVoteForComment(String username, long commentId) {
+        return Optional.ofNullable(votes.get(username, commentId)).orElse(0);
     }
 }
