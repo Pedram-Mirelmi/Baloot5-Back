@@ -30,4 +30,7 @@ public class Constants {
     public static final String PROVIDER = "provider";
     public static final String VOTE = "vote";
     public static final String PROVIDER_ID = "providerId";
+    public static final String AVAILABLE = "available";
+    public static final String LIKES = "likes";
+    public static final String DISLIKES = "dislikes";
 }

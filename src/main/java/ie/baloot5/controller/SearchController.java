@@ -34,11 +34,6 @@ SearchController {
                         commodity -> commodity.getName().contains(query)
                 ).toList();
             }
-            if(searchBy.equals(PROVIDER)) {
-                return repository.getCommodityList().stream().filter(
-                        commodity -> repository.getProvider(commodity.getProviderId()).get().getName().equals(query)
-                ).toList();
-            }
             throw new InvalidRequestParamsException("Invalid search-by parameter");
         }
         throw new InvalidValueException("Authentication token invalid");

@@ -16,7 +16,6 @@ public class Commodity {
     private String name;
     @SerializedName("providerId")
     private long providerId;
-
     @SerializedName("price")
     private long price;
     @SerializedName("categories")

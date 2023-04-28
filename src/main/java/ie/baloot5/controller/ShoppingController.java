@@ -29,14 +29,15 @@ public class ShoppingController {
 
 
     @PostMapping("/api/shoppingList/add")
-    public Map<String, String> addToShoppingList(@RequestHeader(AUTH_TOKEN) String authToken, @RequestBody Map<String, Long> body) throws InvalidIdException, NotEnoughAmountException {
+    public Map<String, Object> addToShoppingList(@RequestHeader(AUTH_TOKEN) String authToken, @RequestBody Map<String, Long> body) throws InvalidIdException, NotEnoughAmountException {
         if(sessionManager.isValidToken(authToken)) {
             try {
                 User user = sessionManager.getUser(authToken).get();
                 long commodityId = Objects.requireNonNull(body.get(COMMODITY_ID));
                 long count = Objects.requireNonNull(body.get(COUNT));
                 repository.addToBuyList(user.getUsername(), commodityId, count);
-                return Map.of(STATUS, SUCCESS);
+                return Map.of(STATUS, SUCCESS,
+                              "shoppingList", repository.getShoppingList(user.getUsername()));
             }
             catch (NullPointerException e) {
                 throw new InvalidRequestParamsException("Invalid commodity id or count");

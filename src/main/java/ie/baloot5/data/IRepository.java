@@ -7,7 +7,6 @@ import ie.baloot5.model.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 
@@ -44,8 +43,6 @@ public interface IRepository {
 
     void removeFromBuyList(@NotNull String username, long commodityId, long count) throws NotEnoughAmountException;
 
-    void clearRepository();
-
     float addRating(@NotNull String username, long commodityId, float rate);
 
     void addVote(@NotNull String voter, long commentId, int vote) throws InvalidIdException, InvalidValueException;
@@ -66,6 +63,8 @@ public interface IRepository {
 
     List<ShoppingItem> getShoppingList(String username) throws InvalidIdException;
 
+    Optional<Long> getInShoppingListCount(String username, long commodityId);
+
     List<ShoppingItem> getPurchasedList(String username) throws InvalidIdException;
 
     Optional<Discount> getDiscount(String discountCode);
@@ -77,5 +76,9 @@ public interface IRepository {
     Optional<Comment> getComment(long commentId);
 
     boolean authenticate(String username, String password);
+
+    long getCommodityRateCount(long commodityId);
+
+    Optional<Integer> getUserVoteForComment(String username, long commentId);
 }
 
