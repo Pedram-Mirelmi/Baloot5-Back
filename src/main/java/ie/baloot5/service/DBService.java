@@ -247,8 +247,8 @@ public class DBService implements IRepository {
             throw new InvalidIdException("Invalid username");
         if (!comments.containsKey(commentId))
             throw new InvalidIdException("Invalid comment id");
-        if(vote != -1 && vote != 1)
-            throw new InvalidValueException("Invalid vote value(Only 1 and -1)");
+        if(vote != -1 && vote != 1 && vote != 0)
+            throw new InvalidValueException("Invalid vote value(Only 1 and -1 and 0)");
         Comment comment = comments.get(commentId);
         if(votes.contains(voter, commentId)) {
             comment.removeVote(Objects.requireNonNull(votes.get(voter, commentId)));

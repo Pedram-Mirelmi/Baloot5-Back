@@ -8,6 +8,7 @@ import ie.baloot5.exception.InvalidValueException;
 import ie.baloot5.model.Commodity;
 import ie.baloot5.model.CommodityDTO;
 import ie.baloot5.model.User;
+import ie.baloot5.model.RateDTO;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.web.bind.annotation.*;
 
@@ -76,14 +77,14 @@ public class CommodityController {
     }
 
     @PostMapping("/api/commoditiesRates")
-    public Map<String, String> rateCommodity(@RequestHeader(AUTH_TOKEN) String authToken,
-                                             @RequestBody Map<String, String> body) {
+    public RateDTO rateCommodity(@RequestHeader(AUTH_TOKEN) String authToken,
+                                 @RequestBody Map<String, String> body) {
         if(sessionManager.isValidToken(authToken)) {
             long commodityId = Long.parseLong(body.get(COMMODITY_ID));
             float rate = Float.parseFloat(body.get(RATING));
             User user = sessionManager.getUser(authToken).get();
-            repository.addRating(user.getUsername(), commodityId, rate);
-            return Map.of(STATUS, SUCCESS);
+            float newRating = repository.addRating(user.getUsername(), commodityId, rate);
+            return new RateDTO(SUCCESS, newRating, repository.getCommodityRateCount(commodityId));
         }
         throw new InvalidValueException("Authentication token not valid");
     }

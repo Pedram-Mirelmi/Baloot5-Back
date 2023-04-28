@@ -11,8 +11,8 @@ public class Comment {
     private Long commodityId;
     private String text;
     private String date;
-    private int likes = 0;
-    private int dislikes = 0;
+    private int likes;
+    private int dislikes;
 
     public Comment(Long commentId, Long commodityId, String username, String userEmail, String text, String date) {
         this.commentId = commentId;
