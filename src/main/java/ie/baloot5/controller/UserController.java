@@ -14,6 +14,7 @@ import java.util.Objects;
 
 import static ie.baloot5.Utils.Constants.*;
 
+@CrossOrigin(origins = "http://localhost:9090")
 @RestController
 public class UserController {
 

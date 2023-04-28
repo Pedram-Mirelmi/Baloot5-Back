@@ -4,17 +4,14 @@ import ie.baloot5.data.IRepository;
 import ie.baloot5.data.ISessionManager;
 import ie.baloot5.exception.InvalidIdException;
 import ie.baloot5.model.Provider;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static ie.baloot5.Utils.Constants.*;
 
-
+@CrossOrigin(origins = "http://localhost:9090")
 @RestController
 public class ProviderController {
     final IRepository repository;

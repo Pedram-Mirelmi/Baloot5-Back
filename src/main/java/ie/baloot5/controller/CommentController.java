@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+@CrossOrigin(origins = "http://localhost:9090")
 @RestController
 public class CommentController {
     final IRepository repository;
