@@ -1,14 +1,20 @@
 package ie.baloot5.model;
 
+import java.util.List;
+
 public class ShoppingItem {
-    private long commodityId;
-    private String commodityName;
-    private long count;
-    private long inStock;
-    private float rating;
+    final private long commodityId;
+    final private String commodityName;
+    final private long count;
+    final private long price;
+    final private List<String> categories;
+    final private long inStock;
+    final private float rating;
 
     public ShoppingItem(Commodity commodity, long count) {
         this.commodityId = commodity.getId();
+        this.price = commodity.getPrice();
+        this.categories = commodity.getCategories();
         this.commodityName = commodity.getName();
         this.inStock = commodity.getInStock();
         this.rating = commodity.getRating();
@@ -19,41 +25,31 @@ public class ShoppingItem {
         return commodityId;
     }
 
-    public void setCommodityId(long commodityId) {
-        this.commodityId = commodityId;
-    }
 
     public String getCommodityName() {
         return commodityName;
     }
 
-    public void setCommodityName(String commodityName) {
-        this.commodityName = commodityName;
-    }
 
     public long getCount() {
         return count;
     }
 
-    public void setCount(int count) {
-        this.count = count;
-    }
 
     public long getInStock() {
         return inStock;
     }
 
-    public void setInStock(int inStock) {
-        this.inStock = inStock;
-    }
 
     public float getRating() {
         return rating;
     }
 
-    public void setRating(float rating) {
-        this.rating = rating;
+    public long getPrice() {
+        return price;
     }
 
-
+    public List<String> getCategories() {
+        return categories;
+    }
 }
