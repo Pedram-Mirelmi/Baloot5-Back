@@ -59,7 +59,7 @@ public class DBService implements IRepository {
         }
 
         Discount[] discounts = gson.fromJson(getResource(apiUri + "discount"), Discount[].class);
-        for(Discount discount : discounts) {
+        for (Discount discount : discounts) {
             addDiscount(discount);
         }
     }
@@ -99,7 +99,7 @@ public class DBService implements IRepository {
             return StaticData.providersString;
         if (uri.equals("http://5.253.25.110:5000/api/comments"))
             return StaticData.commentsString;
-        if(uri.equals("http://5.253.25.110:5000/api/discount"))
+        if (uri.equals("http://5.253.25.110:5000/api/discount"))
             return StaticData.discounts;
         return null;
 //        try {
@@ -248,13 +248,16 @@ public class DBService implements IRepository {
             throw new InvalidIdException("Invalid username");
         if (!comments.containsKey(commentId))
             throw new InvalidIdException("Invalid comment id");
-        if(vote != -1 && vote != 1 && vote != 0)
+        if (vote != -1 && vote != 1 && vote != 0)
             throw new InvalidValueException("Invalid vote value(Only 1 and -1 and 0)");
         Comment comment = comments.get(commentId);
-        if(votes.contains(voter, commentId)) {
-            comment.removeVote(Objects.requireNonNull(votes.get(voter, commentId)));
+        if (votes.contains(voter, commentId)) {
+            int prevVote = votes.get(voter, commentId);
+            if (prevVote != 0)
+                comment.removeVote(Objects.requireNonNull(votes.get(voter, commentId)));
         }
-        comment.addVote(vote);
+        if (vote != 0)
+            comment.addVote(vote);
         votes.put(voter, commentId, vote);
     }
 
@@ -278,7 +281,7 @@ public class DBService implements IRepository {
         var user = users.get(username);
         if (user == null)
             throw new InvalidIdException("Invalid username");
-        if(credit <= 0)
+        if (credit <= 0)
             throw new InvalidValueException("negative credit");
         user.setCredit(user.getCredit() + credit);
     }
@@ -289,7 +292,7 @@ public class DBService implements IRepository {
         if (!users.containsKey(username))
             throw new InvalidIdException("Not such username");
         var buyList = shoppingLists.row(username).entrySet();
-        long totalPrice = (long)(calculateTotalBuyListPrice(username) * discount);
+        long totalPrice = (long) (calculateTotalBuyListPrice(username) * discount);
         User user = users.get(username);
         if (user.getCredit() < totalPrice)
             throw new NotEnoughAmountException("Not enough credit");
@@ -352,7 +355,7 @@ public class DBService implements IRepository {
 
     @Override
     public boolean hasUserUsedDiscount(String discountCode, String username) throws InvalidIdException {
-        if(!discountRecords.containsKey(discountCode))
+        if (!discountRecords.containsKey(discountCode))
             throw new InvalidIdException("Invalid Discount code");
         return discountRecords.get(discountCode).contains(username);
     }
@@ -368,8 +371,8 @@ public class DBService implements IRepository {
         });
         scores.remove(commodityId);
         return scores.entrySet().stream().sorted(Map.Entry.comparingByKey()).map(
-                    cid -> commodities.get(cid.getKey())
-                ).toList().subList(0, 5);
+                cid -> commodities.get(cid.getKey())
+        ).toList().subList(0, 5);
     }
 
     @Override
