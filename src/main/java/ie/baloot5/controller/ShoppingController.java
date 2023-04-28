@@ -28,7 +28,7 @@ public class ShoppingController {
 
 
 
-    @PostMapping("/api/shoppingList")
+    @PostMapping("/api/shoppingList/add")
     public Map<String, String> addToShoppingList(@RequestHeader(AUTH_TOKEN) String authToken, @RequestBody Map<String, Long> body) throws InvalidIdException, NotEnoughAmountException {
         if(sessionManager.isValidToken(authToken)) {
             try {
@@ -52,7 +52,7 @@ public class ShoppingController {
     public List<ShoppingItem> getShoppingList(@RequestHeader(AUTH_TOKEN) String authToken) throws InvalidIdException {
         if(sessionManager.isValidToken(authToken)) {
             try {
-                repository.getShoppingList(sessionManager.getUser(authToken).get().getUsername());
+                return repository.getShoppingList(sessionManager.getUser(authToken).get().getUsername());
             }
             catch (NoSuchElementException e) {
                 throw new InvalidValueException("Authentication token invalid");
@@ -61,7 +61,7 @@ public class ShoppingController {
         throw new InvalidValueException("Authentication token invalid");
     }
 
-    @DeleteMapping("/api/shoppingList")
+    @PostMapping("/api/shoppingList/remove")
     public Map<String, String> removeFromShoppingList(@RequestHeader(AUTH_TOKEN) String authToken, @RequestBody Map<String, Long> body) throws NotEnoughAmountException {
         if(sessionManager.isValidToken(authToken)) {
             try {
