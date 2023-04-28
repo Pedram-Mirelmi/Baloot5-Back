@@ -5,6 +5,7 @@ import java.util.List;
 public class ShoppingItem {
     final private long commodityId;
     final private String commodityName;
+    final private long providerId;
     final private long count;
     final private long price;
     final private List<String> categories;
@@ -15,6 +16,7 @@ public class ShoppingItem {
         this.commodityId = commodity.getId();
         this.price = commodity.getPrice();
         this.categories = commodity.getCategories();
+        this.providerId = commodity.getProviderId();
         this.commodityName = commodity.getName();
         this.inStock = commodity.getInStock();
         this.rating = commodity.getRating();
@@ -51,5 +53,9 @@ public class ShoppingItem {
 
     public List<String> getCategories() {
         return categories;
+    }
+
+    public long getProviderId() {
+        return providerId;
     }
 }
