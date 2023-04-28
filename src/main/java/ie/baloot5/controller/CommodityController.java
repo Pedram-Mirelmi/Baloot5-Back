@@ -29,7 +29,7 @@ public class CommodityController {
     @GetMapping("/api/commodities/{commodityId}")
     public CommodityDTO getSingleCommodity(@RequestHeader(value = AUTH_TOKEN, required = false) String authToken,
                                            @PathVariable("commodityId") int commodityId) {
-        if(sessionManager.isValidToken(authToken)) {
+        if (sessionManager.isValidToken(authToken)) {
             try {
                 User user = sessionManager.getUser(authToken).get();
                 return new CommodityDTO(repository.getCommodityById(commodityId).get(),
@@ -49,7 +49,7 @@ public class CommodityController {
                                               @RequestParam(SORT_BY) String sortBy,
                                               @RequestParam(SEARCH_BY) String searchBy,
                                               @RequestParam(AVAILABLE) boolean onlyAvailable) {
-        if(sessionManager.isValidToken(authToken)) {
+        if (sessionManager.isValidToken(authToken)) {
             try {
                 List<Commodity> result;
                 // searching
@@ -64,12 +64,11 @@ public class CommodityController {
                                 repository.getCommodityRateCount(commodity.getId()),
                                 repository.getProvider(commodity.getProviderId()).get().getName())
                 );
-                if(onlyAvailable) {
+                if (onlyAvailable) {
                     stream = stream.filter(commodityDTO -> commodityDTO.getInStock() > 0);
                 }
                 return stream.toList();
-            }
-            catch (NoSuchElementException e) {
+            } catch (NoSuchElementException e) {
                 throw new InvalidIdException("Some id is wrong");
             }
         }
@@ -79,7 +78,7 @@ public class CommodityController {
     @PostMapping("/api/commoditiesRates")
     public RateDTO rateCommodity(@RequestHeader(AUTH_TOKEN) String authToken,
                                  @RequestBody Map<String, String> body) {
-        if(sessionManager.isValidToken(authToken)) {
+        if (sessionManager.isValidToken(authToken)) {
             long commodityId = Long.parseLong(body.get(COMMODITY_ID));
             float rate = Float.parseFloat(body.get(RATING));
             User user = sessionManager.getUser(authToken).get();
@@ -92,19 +91,18 @@ public class CommodityController {
     @GetMapping("/api/recommended")
     public List<CommodityDTO> getRecommended(@RequestHeader(AUTH_TOKEN) String authToken,
                                              @RequestParam(COMMODITY_ID) long commodityId) {
-        if(sessionManager.isValidToken(authToken)) {
+        if (sessionManager.isValidToken(authToken)) {
             try {
                 User user = sessionManager.getUser(authToken).get();
                 var recommendeds = repository.getRecommendedCommodities(user.getUsername(), commodityId);
                 return repository.getRecommendedCommodities(user.getUsername(), commodityId).stream().map(
-                            commodity -> new CommodityDTO(commodity,
-                                    repository.getInShoppingListCount(user.getUsername(), commodity.getId()),
-                                    repository.getCommodityRateCount(commodity.getId()),
-                                    repository.getProvider(commodity.getProviderId()).get().getName())
+                        commodity -> new CommodityDTO(commodity,
+                                repository.getInShoppingListCount(user.getUsername(), commodity.getId()),
+                                repository.getCommodityRateCount(commodity.getId()),
+                                repository.getProvider(commodity.getProviderId()).get().getName())
 
                 ).toList();
-            }
-            catch (NoSuchElementException | InvalidIdException e) {
+            } catch (NoSuchElementException | InvalidIdException e) {
                 throw new InvalidValueException("Authentication token not valid");
             }
         }
@@ -112,22 +110,21 @@ public class CommodityController {
     }
 
     private List<Commodity> doSort(@NotNull List<Commodity> result, String sortBy) {
-        if(sortBy.equals(NAME)) {
+        if (sortBy.equals(NAME)) {
             return result.stream().sorted(Comparator.comparing(Commodity::getName)).toList();
-        }
-        else if(sortBy.equals(PRICE)) {
+        } else if (sortBy.equals(PRICE)) {
             return result.stream().sorted(Comparator.comparing(Commodity::getPrice)).toList();
-        }
-        else {
+        } else {
             throw new InvalidRequestParamsException("Invalid sort-by parameter");
         }
     }
 
     private List<Commodity> doSearch(String query, String searchBy) {
-        if(searchBy.equals(NAME)) {
-            return  repository.searchCommoditiesByName(query);
-        }
-        else if(searchBy.equals(CATEGORY)) {
+        if (searchBy.equals(NAME)) {
+            return repository.searchCommoditiesByName(query);
+        } else if (searchBy.equals(CATEGORY)) {
+            if (query.isBlank())
+                return repository.getCommodityList();
             return repository.getCommoditiesByCategory(query);
         }
         throw new InvalidRequestParamsException("Invalid search-by parameter");

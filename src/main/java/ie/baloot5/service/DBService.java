@@ -299,11 +299,15 @@ public class DBService implements IRepository {
         for (var entry : buyList)
             if (commodities.get(entry.getKey()).getInStock() < entry.getValue())
                 throw new NotEnoughAmountException("there is not anough " + commodities.get(entry.getKey()).getName() + " in stock");
-        for (var entry : buyList) {
-            commodities.get(entry.getKey()).subtractStock(entry.getValue());
-            long inList = purchasedLists.contains(username, entry.getKey()) ? Objects.requireNonNull(purchasedLists.get(username, entry.getKey())) : 0;
-            purchasedLists.put(username, entry.getKey(), entry.getValue() + inList);
-            shoppingLists.remove(username, entry.getKey());
+
+        var buyListCopy = buyList.stream().toList();
+        for (var entry : buyListCopy) {
+            var commodityId = entry.getKey();
+            var value = entry.getValue();
+            commodities.get(commodityId).subtractStock(value);
+            long inList = purchasedLists.contains(username, commodityId) ? Objects.requireNonNull(purchasedLists.get(username, commodityId)) : 0;
+            purchasedLists.put(username, commodityId, value + inList);
+            shoppingLists.remove(username, commodityId);
         }
         user.setCredit(user.getCredit() - totalPrice);
     }
