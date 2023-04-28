@@ -23,7 +23,7 @@ public class AuthController {
     final IRepository repository;
     final ISessionManager sessionManager;
 
-    public AuthController(IRepository repository, ISessionManager sessionManager) {
+    public AuthController(IRepository repository, ISessionManager sessionManager) throws NoSuchAlgorithmException {
         this.repository = repository;
         this.sessionManager = sessionManager;
         sessionManager.addSession("amir", "1234");
@@ -58,7 +58,6 @@ public class AuthController {
             String birthDate = Objects.requireNonNull(body.get(BIRTHDATE));
             String address = Objects.requireNonNull(body.get(ADDRESS));
 
-            Map<String, String> response = new HashMap<>();
             repository.addUser(new User(username, password, email, birthDate, address, 0));
             String authToken = sessionManager.addSession(username, password);
             return Map.of(STATUS, SUCCESS,
