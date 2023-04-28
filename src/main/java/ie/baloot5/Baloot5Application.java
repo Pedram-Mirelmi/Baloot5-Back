@@ -14,13 +14,4 @@ public class Baloot5Application {
 		SpringApplication.run(Baloot5Application.class, args);
 	}
 
-//	@Bean
-//	public WebMvcConfigurer corsConfigurer() {
-//		return new WebMvcConfigurer() {
-//			@Override
-//			public void addCorsMappings(@NotNull CorsRegistry registry) {
-//				registry.addMapping("/**").allowedOrigins("*");
-//			}
-//		};
-//	}
 }

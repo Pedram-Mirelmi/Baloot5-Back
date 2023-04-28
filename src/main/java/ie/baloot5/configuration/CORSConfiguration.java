@@ -15,12 +15,9 @@ public class CORSConfiguration {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.addAllowedOrigin("http://localhost:9090");
+        config.addAllowedOrigin("http://localhost:3000");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
-//        config.addAllowedHeader("Content-Type");
-//        config.addAllowedHeader("Accept");
-//        config.addAllowedMethod("POST");
-//        config.ad
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }
